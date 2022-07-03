@@ -1,10 +1,12 @@
 package org.gyula;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.event.ValueChangeEvent;
 import jakarta.inject.Named;
 
 @Named("PhoneRepo")
@@ -13,9 +15,11 @@ public class MobilePhoneRepo implements Serializable{
 
     private String repoName = "Qenel Repo";
     private static Map<String, Double> inventory;
+    private String selectedPhone = "";
+    private Date viewDate;
 
     static {
-        inventory = new HashMap<String, Double>();
+        inventory = new HashMap<>();
         inventory.put("Zoflina Z09", 250.0);
         inventory.put("Zoflina Z11", 299.0);
         inventory.put("Diallonic DS101", 429.0);
@@ -41,4 +45,27 @@ public class MobilePhoneRepo implements Serializable{
         inventory = inventoryMap;
     }
 
+    public String getSelectedPhone() {
+        return selectedPhone;
+    }
+
+    public void setSelectedPhone(String selectedPhone) {
+        this.selectedPhone = selectedPhone;
+    }
+
+    public void selectedPhoneChanged(ValueChangeEvent event) {
+        this.selectedPhone = event.getNewValue().toString();
+    }
+
+    public Date getViewDate() {
+        return viewDate;
+    }
+
+    public void setViewDate(Date viewDate) {
+        this.viewDate = viewDate;
+    }
+
+    public void updateViewDate() {
+        this.viewDate = new Date();
+    }
 }
