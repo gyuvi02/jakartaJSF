@@ -3,9 +3,12 @@ package org.gyula;
 import java.io.Serializable;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Map;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
+
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 
 @Named("PhoneBean")
@@ -20,6 +23,9 @@ public class MobilePhoneBean implements Serializable{
     String os;
     int storageCapacity;
     int ram;
+
+    private Map<String, Object> sessionMap = FacesContext.getCurrentInstance()
+            .getExternalContext().getSessionMap();
 
     public String getRepoName() {
         return repoName;
@@ -138,4 +144,56 @@ public class MobilePhoneBean implements Serializable{
         else
             return "create.xhtml?faces-redirect=true";
     }
+
+    public String edit(int id) {
+        MobilePhone phone = new MobilePhone();
+        System.out.println("Updating phone with ID: " + id);
+
+        try {
+            connection = getDataSourceConnection();
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM phones WHERE id = " + id);
+            rs.next();
+
+            phone.setId(rs.getInt("id"));
+            phone.setBrandName(rs.getString("brandName"));
+            phone.setProductName(rs.getString("productName"));
+            phone.setOs(rs.getString("os"));
+            phone.setStorageCapacity(rs.getInt("storageCapacity"));
+            phone.setRam(rs.getInt("ram"));
+
+            sessionMap.put("editPhone", phone);
+            connection.close();
+        }
+
+        catch (Exception e) {
+            System.out.println(e);
+        }
+        return "/edit.xhtml?faces-redirect=true";
+    }
+
+    public String update(MobilePhone mp) {
+
+        try {
+            connection = getDataSourceConnection();
+            PreparedStatement stmt = connection.prepareStatement(
+                    "UPDATE phones SET brandName=?,productName=?," +
+                            "os=?,storageCapacity=?,ram=? WHERE id=?");
+
+            stmt.setString(1, mp.brandName);
+            stmt.setString(2, mp.productName);
+            stmt.setString(3, mp.os);
+            stmt.setInt(4, mp.storageCapacity);
+            stmt.setInt(5, mp.ram);
+            stmt.setInt(6, mp.id);
+
+            stmt.executeUpdate();
+            connection.close();
+        }
+        catch (Exception e) {
+            System.out.println();
+        }
+        return "/view.xhtml?faces-redirect=true";
+    }
+
 }
