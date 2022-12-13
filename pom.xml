@@ -4,12 +4,20 @@
 
   <groupId>org.gyula</groupId>
   <artifactId>jakartaJSF</artifactId>
-  <packaging>war</packaging>
+<!--  <packaging>war</packaging>-->
+  <packaging>ejb</packaging>
   <version>1.0-SNAPSHOT</version>
 
   <name>JSF Web App</name>
 
   <dependencies>
+
+    <dependency>
+      <groupId>javax</groupId>
+      <artifactId>javaee-api</artifactId>
+      <version>8.0.1</version>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
       <groupId>jakarta.platform</groupId>
@@ -35,6 +43,11 @@
       <artifactId>mysql-connector-java</artifactId>
       <version>8.0.28</version>
     </dependency>
+    <dependency>
+      <groupId>org.wildfly.plugins</groupId>
+      <artifactId>wildfly-maven-plugin</artifactId>
+      <version>2.0.1.Final</version>
+    </dependency>
     <!--    <dependency>-->
 <!--      <groupId>org.apache.myfaces</groupId>-->
 <!--      <artifactId>myfaces</artifactId>-->
@@ -56,6 +69,52 @@
           <target>11</target>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.wildfly.plugins</groupId>
+        <artifactId>wildfly-maven-plugin</artifactId>
+        <version>2.0.1.Final</version>
+        <configuration>
+          <hostname>127.0.0.1</hostname>
+          <port>9990</port>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-ejb-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <ejbVersion>3.2</ejbVersion>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.1</version>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${endorsed.dir}</outputDirectory>
+              <silent>true</silent>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>javax</groupId>
+                  <artifactId>javaee-endorsed-api</artifactId>
+                  <version>7.0</version>
+                  <type>jar</type>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
 
   </build>
